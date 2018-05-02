@@ -39,6 +39,7 @@
     "mammoth": "^1.4.4",
     "rdf-translator": "^2.0.0",
     "rdfa-parser": "^1.0.1",
+    "rdfa-processor": "0.0.2",
     "request": "^2.85.0",
     "sync-request": "^6.0.0"
   }

@@ -13,6 +13,10 @@ var jsdom = require('jsdom');
 const _cliProgress = require('cli-progress');
 var rdfaParser = require('ldtr/lib/rdfa/parser');
 //var xmldom = require('xmldom');
+var rdfaprocessor = require('rdfa-processor');
+const N3 = require('n3');
+var DataFactory = N3.DataFactory;
+var DefaultGraph = DataFactory.internal.DefaultGraph;
 
 /******************************/
 /***DEFINE VARIABLES***********/
@@ -362,6 +366,23 @@ input.forEach(function (fileName) {
         //console.log("The "+countryLabel+" Turtle file was saved!");
     });
 
+    //Save the file in N-triples syntax
+    var document2   = (new JSDOM($.html(), {url:  config['prefix']['nifo']})).window.document;
+    var parser = new rdfaprocessor.RDFaProcessor();
+    const writer = N3.Writer({ format: 'N-Triples' });
+    parser.onTriple = (triple) => {
+     if(triple  !== null) {
+      triple.graph = new DefaultGraph();
+       writer.addQuad(triple);
+      }
+    };
+    parser.process(document2, {baseURI: config['prefix']['nifo']});
+    writer.end((error, document2) => fs.writeFile(outputPathRDF + "/" + output[0] + ".nt", document2 , function (err) {
+        if (err) {
+            return console.log(err);
+        }
+        //console.log("The "+countryLabel+" Turtle file was saved!");
+    }));
     //Save the file in JSON-LD syntax
     var baseUri = config['prefix']['nifo'];
     //DOMParser = xmldom.DOMParser;
